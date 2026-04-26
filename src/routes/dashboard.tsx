@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardShell } from "../apps/_shells.jsx";
+import DashboardApp from "../apps/dashboard/DashboardApp.jsx";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute("/dashboard")({
       { name: "description", content: "Sales analytics and business insights for Kape sa Sulok." },
     ],
   }),
-  component: DashboardShell,
+  component: DashboardApp,
 });

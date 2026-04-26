@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { InventoryShell } from "../apps/_shells.jsx";
+import InventoryApp from "../apps/inventory/InventoryApp.jsx";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute("/inventory")({
       { name: "description", content: "Mobile inventory management for Kape sa Sulok managers." },
     ],
   }),
-  component: InventoryShell,
+  component: InventoryApp,
 });

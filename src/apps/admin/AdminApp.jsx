@@ -68,3 +68,7 @@ function AdminBody() {
     </div>
   );
 }
+
+export default function AdminApp() {
+  return <RouteGuard appKey="admin"><AdminBody /></RouteGuard>;
+}

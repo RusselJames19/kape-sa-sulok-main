@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PosShell } from "../apps/_shells.jsx";
+import PosApp from "../apps/pos/PosApp.jsx";
 
 export const Route = createFileRoute("/pos")({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute("/pos")({
       { name: "description", content: "Point-of-sale terminal for Kape sa Sulok cashiers and managers." },
     ],
   }),
-  component: PosShell,
+  component: PosApp,
 });

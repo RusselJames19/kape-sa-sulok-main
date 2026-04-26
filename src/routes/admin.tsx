@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminShell } from "../apps/_shells.jsx";
+import AdminApp from "../apps/admin/AdminApp.jsx";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute("/admin")({
       { name: "description", content: "System administration for Kape sa Sulok." },
     ],
   }),
-  component: AdminShell,
+  component: AdminApp,
 });
