@@ -183,10 +183,10 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Default admin user.
 -- Username: admin   Password: ChangeMe123!
--- Hash generated with: password_hash('ChangeMe123!', PASSWORD_BCRYPT)
+-- (bcrypt hash generated with password_hash('ChangeMe123!', PASSWORD_BCRYPT))
 INSERT INTO users (name, username, password_hash, role, is_active) VALUES
   ('System Admin', 'admin',
-   '$2y$10$eImiTXuWVxfM37uY4JANjQ==replace_with_real_hash_on_first_run',
+   '$2y$12$aUXSEltTsgMOyApIwvbG9u7ooldTcJBQJxwQ/T7TcR3Pj5ckkMq6K',
    'admin', 1);
 
 -- Default categories
