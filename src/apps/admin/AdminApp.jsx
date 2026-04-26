@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ConnectionPanel from "./ConnectionPanel.jsx";
 import UsersPanel from "./UsersPanel.jsx";
+import SettingsPanel from "./SettingsPanel.jsx";
 
 function AdminBody() {
   const { user, logout } = useAuth();
