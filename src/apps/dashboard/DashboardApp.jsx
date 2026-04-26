@@ -7,6 +7,7 @@ import { RefreshCw } from "lucide-react";
 
 import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import { useAuth } from "../../shared/auth/AuthContext.jsx";
+import { useSettings } from "../../shared/auth/SettingsContext.jsx";
 import { presetRange } from "../../shared/utils/dateRange";
 
 import KpiCards from "./KpiCards.jsx";
@@ -17,6 +18,7 @@ import PeakHoursHeatmap from "./PeakHoursHeatmap.jsx";
 
 function DashboardBody() {
   const { user, logout } = useAuth();
+  const { settings } = useSettings();
 
   const initial = presetRange("7d");
   const [range, setRange] = useState({ ...initial, preset: "7d" });
@@ -29,8 +31,8 @@ function DashboardBody() {
       <header className="border-b bg-card">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              Kape sa Sulok
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground truncate">
+              {settings.business_name || "Kape sa Sulok"}
             </p>
             <h1 className="text-xl font-bold leading-tight">Dashboard</h1>
           </div>
