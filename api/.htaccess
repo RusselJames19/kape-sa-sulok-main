@@ -9,7 +9,12 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
-# CORS: allow Lovable preview + local dev. Adjust origin in production.
-Header always set Access-Control-Allow-Origin "*"
-Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With"
+# CORS: dynamic echo of allowed origins. Edit ALLOWED_ORIGINS in api/config/cors.php
+# Default behaviour (set in api/index.php): echo the request Origin only when it
+# matches the whitelist; otherwise no CORS header is sent. Falls back to "*"
+# only when the whitelist contains "*" (development convenience).
+#
+# Default security headers — applied on every response.
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "no-referrer"
+Header always set X-Frame-Options "DENY"

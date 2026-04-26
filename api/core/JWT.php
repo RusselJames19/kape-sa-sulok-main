@@ -28,6 +28,14 @@ class JWT
         if (count($parts) !== 3) throw new RuntimeException('Malformed token');
 
         [$h, $p, $s] = $parts;
+
+        // Reject anything but HS256 — defence against alg=none / alg-confusion attacks.
+        $headerJson = self::b64UrlDecode($h);
+        $header = json_decode($headerJson, true);
+        if (!is_array($header) || ($header['alg'] ?? null) !== 'HS256') {
+            throw new RuntimeException('Unsupported token algorithm');
+        }
+
         $expected = self::b64UrlEncode(hash_hmac('sha256', $h . '.' . $p, $cfg['secret'], true));
         if (!hash_equals($expected, $s)) throw new RuntimeException('Invalid signature');
 
@@ -36,6 +44,9 @@ class JWT
 
         if (isset($payload['exp']) && time() >= (int)$payload['exp']) {
             throw new RuntimeException('Token expired');
+        }
+        if (isset($payload['iss']) && isset($cfg['issuer']) && $payload['iss'] !== $cfg['issuer']) {
+            throw new RuntimeException('Invalid issuer');
         }
         return $payload;
     }

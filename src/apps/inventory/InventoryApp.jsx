@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import { useAuth } from "../../shared/auth/AuthContext.jsx";
+import { useSettings } from "../../shared/auth/SettingsContext.jsx";
 import { productsService } from "../../shared/services/products";
 import { categoriesService } from "../../shared/services/categories";
 
@@ -24,6 +25,7 @@ const TABS = [
 
 function InventoryBody() {
   const { user, logout } = useAuth();
+  const { settings } = useSettings();
 
   const [tab, setTab] = useState("stock");
   const [products, setProducts] = useState([]);
@@ -77,8 +79,8 @@ function InventoryBody() {
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              Kape sa Sulok
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground truncate">
+              {settings.business_name || "Kape sa Sulok"}
             </p>
             <h1 className="text-lg font-bold leading-tight">Inventory</h1>
           </div>

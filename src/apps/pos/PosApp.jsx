@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import { useAuth } from "../../shared/auth/AuthContext.jsx";
+import { useSettings } from "../../shared/auth/SettingsContext.jsx";
 import { productsService } from "../../shared/services/products";
 import { categoriesService } from "../../shared/services/categories";
 import { transactionsService } from "../../shared/services/transactions";
@@ -19,6 +20,7 @@ import RecentTransactions from "./RecentTransactions.jsx";
 
 function PosBody() {
   const { user, logout } = useAuth();
+  const { settings } = useSettings();
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -155,7 +157,7 @@ function PosBody() {
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              Kape sa Sulok
+              {settings.business_name || "Kape sa Sulok"}
             </p>
             <h1 className="text-xl font-bold">Point of Sale</h1>
           </div>
@@ -224,6 +226,9 @@ function PosBody() {
         open={receiptOpen}
         onOpenChange={setReceiptOpen}
         transaction={receipt}
+        businessName={settings.business_name}
+        businessAddress={settings.business_address}
+        footer={settings.receipt_footer}
       />
     </div>
   );

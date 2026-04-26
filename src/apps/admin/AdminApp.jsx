@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ConnectionPanel from "./ConnectionPanel.jsx";
 import UsersPanel from "./UsersPanel.jsx";
+import SettingsPanel from "./SettingsPanel.jsx";
 
 function AdminBody() {
   const { user, logout } = useAuth();
@@ -14,7 +15,7 @@ function AdminBody() {
   return (
     <div className="min-h-screen bg-[oklch(0.97_0.015_75)] text-foreground">
       <header className="border-b bg-card">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
               Kape sa Sulok
@@ -41,9 +42,10 @@ function AdminBody() {
             </Button>
           </div>
         </div>
-        <nav className="mx-auto max-w-6xl px-6 flex gap-1 border-t">
+        <nav className="mx-auto max-w-6xl px-4 sm:px-6 flex gap-1 border-t overflow-x-auto">
           {[
             { key: "users", label: "Users" },
+            { key: "settings", label: "Settings" },
             { key: "connection", label: "Connection" },
           ].map((t) => (
             <button
@@ -61,8 +63,9 @@ function AdminBody() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
         {tab === "users" && <UsersPanel />}
+        {tab === "settings" && <SettingsPanel />}
         {tab === "connection" && <ConnectionPanel />}
       </main>
     </div>
