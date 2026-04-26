@@ -45,6 +45,7 @@ function AdminBody() {
         <nav className="mx-auto max-w-6xl px-6 flex gap-1 border-t">
           {[
             { key: "users", label: "Users" },
+            { key: "settings", label: "Settings" },
             { key: "connection", label: "Connection" },
           ].map((t) => (
             <button
@@ -64,6 +65,7 @@ function AdminBody() {
 
       <main className="mx-auto max-w-6xl px-6 py-8">
         {tab === "users" && <UsersPanel />}
+        {tab === "settings" && <SettingsPanel />}
         {tab === "connection" && <ConnectionPanel />}
       </main>
     </div>
