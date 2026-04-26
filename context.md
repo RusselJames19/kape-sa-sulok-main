@@ -108,7 +108,7 @@ folder scaffold for all 4 apps, route shells, landing page.
 - `apps/pos/PosApp.jsx` — wires it all: catalog load, cart state, checkout,
   receipt, recent-sales refresh. Stock numbers refresh after each sale.
 
-### ✅ Phase 4 — Inventory App (current)
+### ✅ Phase 4 — Inventory App
 
 **Backend (PHP)**
 - `StockController.update` — `set` or `add` modes, both wrapped in a PDO
@@ -136,9 +136,40 @@ folder scaffold for all 4 apps, route shells, landing page.
   Products), max-width 3xl for thumb-friendly mobile layout, refreshes catalog
   + low-stock list after every change.
 
+### ✅ Phase 5 — Dashboard App (current)
+
+**Backend (PHP) — `AnalyticsController`**
+- `summary` — today's `tx_count` + `revenue` + `items_sold`, top product over
+  the last 7 days, and current low-stock variant count.
+- `sales` — time-series of `tx_count` + `revenue` over `?from=&to=` with
+  `?granularity=day|hour`. Inclusive `to` is converted to an exclusive
+  next-day boundary server-side; defaults to the last 7 days.
+- `top-products` — top N (default 10, max 50) with `?by=revenue|qty`,
+  joined with category for display.
+- `peak-hours` — `DAYOFWEEK × HOUR` cells (`tx_count`, `revenue`) for the
+  range, suitable for direct heatmap rendering.
+- All range parsing is centralized in `parseRange()` with date validation
+  (`YYYY-MM-DD`) so query params can never produce malformed SQL.
+
+**Frontend (React + Recharts)**
+- `shared/services/analytics.js` — thin wrappers for all four endpoints.
+- `shared/utils/dateRange.js` — preset ranges (Today / 7d / 30d / 90d) +
+  helpers used by the picker.
+- `apps/dashboard/KpiCards.jsx` — 4 KPI cards (revenue today, sales today,
+  top product 7d, low-stock count) with skeleton loading.
+- `apps/dashboard/DateRangePicker.jsx` — preset chips + custom from/to
+  date inputs that flip the picker into "custom" mode.
+- `apps/dashboard/SalesChart.jsx` — Recharts `BarChart`, switchable
+  Revenue / Sales metric and Daily / Hourly granularity, peso-formatted Y axis.
+- `apps/dashboard/TopProducts.jsx` — horizontal bar chart + numbered top-5
+  table, switchable Revenue / Quantity.
+- `apps/dashboard/PeakHoursHeatmap.jsx` — 7×24 grid (Mon..Sun rows),
+  oklch lightness ramp keyed to max cell, hover-to-detail readout, legend.
+- `apps/dashboard/DashboardApp.jsx` — wires everything together; bumping
+  the refresh key remounts each panel for a clean reload.
+
 ### ⏳ Upcoming
 
-- **Phase 5 — Dashboard App:** charts (Recharts), top products, peak hours heatmap.
 - **Phase 6 — Polish & hardening:** Settings page wired everywhere, security audit, responsive polish.
 
 ## Database Schema (summary)
