@@ -136,7 +136,7 @@ folder scaffold for all 4 apps, route shells, landing page.
   Products), max-width 3xl for thumb-friendly mobile layout, refreshes catalog
   + low-stock list after every change.
 
-### ✅ Phase 5 — Dashboard App (current)
+### ✅ Phase 5 — Dashboard App
 
 **Backend (PHP) — `AnalyticsController`**
 - `summary` — today's `tx_count` + `revenue` + `items_sold`, top product over
@@ -168,9 +168,45 @@ folder scaffold for all 4 apps, route shells, landing page.
 - `apps/dashboard/DashboardApp.jsx` — wires everything together; bumping
   the refresh key remounts each panel for a clean reload.
 
+### ✅ Phase 6 — Polish & Hardening (current)
+
+**Backend (PHP)**
+- `SettingsController` real implementation:
+  - `GET /settings` returns the full whitelisted key set, defaults filled in
+    so the client never has to guess missing rows.
+  - `PUT /settings` admin-only, ignores unknown keys, validates per-key
+    (e.g. `low_stock_threshold` must be a non-negative integer ≤ 100k,
+    `logo_url` must be `http(s)://`, `business_name` non-empty), and upserts
+    via `INSERT … ON DUPLICATE KEY UPDATE`.
+- `JWT::decode` now verifies `alg=HS256` (defence vs `alg=none` /
+  algorithm-confusion attacks) and validates `iss` against config.
+- `api/index.php` + new `api/config/cors.php` — origin allow-list with
+  per-request `Access-Control-Allow-Origin` echo + `Vary: Origin`. Falls
+  back to `*` only when the list contains `*` (dev convenience). Adds
+  `Referrer-Policy: no-referrer` and `X-Frame-Options: DENY` on every
+  response. `.htaccess` mirrors the security headers.
+
+**Frontend (React)**
+- `shared/services/settings.js` — `settingsService.get()` / `update()`
+  with `SETTINGS_DEFAULTS`.
+- `shared/auth/SettingsContext.jsx` — `<SettingsProvider>` (mounted in
+  `AppProviders`) hydrates settings as soon as the user is authenticated,
+  keeps defaults in place so headers never flash empty.
+- `apps/admin/SettingsPanel.jsx` — Business Identity + Operations cards
+  (name, address, logo URL, low-stock threshold, currency symbol, receipt
+  footer). Mirror-validates server rules, read-only for non-admin viewers.
+  Wired into `AdminApp` as a new "Settings" tab between Users + Connection.
+- POS / Inventory / Dashboard headers now read `settings.business_name`.
+  POS receipts read `business_name`, `business_address`, `receipt_footer`
+  from settings instead of hard-coded strings.
+- Admin header polished for ≤640px (flex-wrap, scrollable tab nav).
+
 ### ⏳ Upcoming
 
-- **Phase 6 — Polish & hardening:** Settings page wired everywhere, security audit, responsive polish.
+- Optional Electron / React Native packaging.
+- Production hardening: lock down `cors.php` allow-list, generate strong
+  JWT secret, replace seed admin password, point all clients at the LAN
+  base URL (Settings → Connection in the Admin Panel).
 
 ## Database Schema (summary)
 
