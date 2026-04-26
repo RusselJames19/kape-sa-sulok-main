@@ -39,7 +39,7 @@ function PosBody() {
     setError(null);
     try {
       const [prodRes, catRes] = await Promise.all([
-        productsService.list({ available_only: 1 } /* server-side filter not yet wired into service */),
+        productsService.list({ available_only: 1 }),
         categoriesService.list(),
       ]);
       setProducts(prodRes.products || []);
