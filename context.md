@@ -79,7 +79,7 @@ folder scaffold for all 4 apps, route shells, landing page.
   - `PasswordResetDialog.jsx` — admin-set new password (min 8).
   - `ConnectionPanel.jsx` — edit + persist API base URL, ping test, latency.
 
-### ✅ Phase 3 — POS App (current)
+### ✅ Phase 3 — POS App
 
 **Backend (PHP)**
 - `CategoryController.index` — lists active categories (`?include_inactive=1` opt-in); `store/update/deactivate` real implementations with name uniqueness + 404 guards.
@@ -108,9 +108,36 @@ folder scaffold for all 4 apps, route shells, landing page.
 - `apps/pos/PosApp.jsx` — wires it all: catalog load, cart state, checkout,
   receipt, recent-sales refresh. Stock numbers refresh after each sale.
 
+### ✅ Phase 4 — Inventory App (current)
+
+**Backend (PHP)**
+- `StockController.update` — `set` or `add` modes, both wrapped in a PDO
+  transaction with `SELECT … FOR UPDATE` on the variant row. Optional
+  `low_stock_threshold` update in the same call. Refuses negative results.
+- `StockController.lowStock` — variants with `stock_quantity ≤ low_stock_threshold`,
+  joined with product + category, ordered by severity (out-of-stock first).
+- `VariantController.store/update/destroy` — validates size (none/S/M/L),
+  enforces unique `(product_id, size)`, refuses delete when sales history exists
+  (FK RESTRICT-aware, returns a friendly 409).
+- `ProductController.store/update/setAvailability` — full CRUD on product meta;
+  category existence checks; `setAvailability` body `{ available: bool }`.
+
+**Frontend (React, mobile-first, all `.jsx`)**
+- `shared/services/stock.js` — `stockService` (update, lowStock) + `variantsService`.
+- `apps/inventory/StockList.jsx` — flat searchable list of every variant with
+  color-coded quantity badge (green / amber / red).
+- `apps/inventory/LowStockList.jsx` — alerts ordered by severity, refresh button.
+- `apps/inventory/StockAdjustDialog.jsx` — Set / Add tabs, quick-delta chips
+  (+1, +5, +10, +25, −1), inline threshold editing.
+- `apps/inventory/ProductsPanel.jsx` — list with availability switch + edit.
+- `apps/inventory/ProductEditorDialog.jsx` — create/edit product, manage
+  variants inline via `VariantEditorRow.jsx` (price, size, threshold, delete).
+- `apps/inventory/InventoryApp.jsx` — sticky 3-tab nav (Stock / Low Stock /
+  Products), max-width 3xl for thumb-friendly mobile layout, refreshes catalog
+  + low-stock list after every change.
+
 ### ⏳ Upcoming
 
-- **Phase 4 — Inventory App:** mobile-first stock updates, low-stock alerts, product editing.
 - **Phase 5 — Dashboard App:** charts (Recharts), top products, peak hours heatmap.
 - **Phase 6 — Polish & hardening:** Settings page wired everywhere, security audit, responsive polish.
 
