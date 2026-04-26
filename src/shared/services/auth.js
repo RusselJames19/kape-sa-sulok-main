@@ -1,5 +1,5 @@
-// Auth helpers — full implementation lands in Phase 2.
-import { api, setTokens, clearTokens } from "./api";
+// Auth helpers used by the AuthContext.
+import { api, setTokens, clearTokens, getAccessToken, getRefreshToken } from "./api";
 
 export async function login(username, password) {
   const res = await api.post("/auth/login", { username, password });
@@ -13,8 +13,9 @@ export async function login(username, password) {
 }
 
 export async function logout() {
+  const refreshToken = getRefreshToken();
   try {
-    await api.post("/auth/logout");
+    await api.post("/auth/logout", { refreshToken });
   } catch (_) {
     // ignore — clear tokens anyway
   }
@@ -24,4 +25,8 @@ export async function logout() {
 export async function me() {
   const res = await api.get("/auth/me");
   return res.data;
+}
+
+export function hasStoredSession() {
+  return Boolean(getAccessToken());
 }
