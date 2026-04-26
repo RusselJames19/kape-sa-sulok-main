@@ -42,7 +42,7 @@ function AdminBody() {
             </Button>
           </div>
         </div>
-        <nav className="mx-auto max-w-6xl px-6 flex gap-1 border-t">
+        <nav className="mx-auto max-w-6xl px-4 sm:px-6 flex gap-1 border-t overflow-x-auto">
           {[
             { key: "users", label: "Users" },
             { key: "settings", label: "Settings" },
@@ -63,7 +63,7 @@ function AdminBody() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
         {tab === "users" && <UsersPanel />}
         {tab === "settings" && <SettingsPanel />}
         {tab === "connection" && <ConnectionPanel />}
