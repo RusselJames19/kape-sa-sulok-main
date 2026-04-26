@@ -30,30 +30,57 @@ React Native / Expo.
 
 ## Phases
 
-### ✅ Phase 1 — Foundation (current)
+### ✅ Phase 1 — Foundation
 
-Delivered:
-- `database/schema.sql` — full schema + seed data, ready for phpMyAdmin import.
-- `/api/` PHP REST API skeleton:
-  - Custom Router with `{param}` support
-  - PDO singleton enforcing real prepared statements
-  - HS256 JWT encode/decode (no external lib)
-  - `Auth::requireAuth()` and `Auth::requireRole(...)` middleware
-  - `RateLimiter` for login attempts
-  - All controller stubs returning `{ok:true, todo:"..."}` with role guards wired
-  - Working `/api/ping` endpoint
-- `/src/shared/services/api.js` — Axios layer reading base URL from
-  `localStorage`, auto-attaching JWT.
-- `/src/shared/services/{auth,products,transactions,users}.js` — service stubs.
-- `/src/shared/constants/{roles,permissions}.js` — single source of truth
-  for the permissions matrix.
-- Folder scaffold for all 4 apps under `/src/apps/`.
-- `/src/routes/{pos,inventory,dashboard,admin}.tsx` — route shells.
-- New landing page at `/` to pick an app.
+Delivered: schema + seed data, PHP REST skeleton, JWT/Auth/RateLimiter cores,
+controller stubs with role guards wired, Axios layer with localStorage base URL,
+folder scaffold for all 4 apps, route shells, landing page.
+
+### ✅ Phase 2 — Admin Panel + Auth (current)
+
+**Backend (PHP)**
+- `AuthController` real implementation:
+  - `POST /auth/login` — bcrypt verify, rate-limit check (5 fails / 15 min /
+    username+IP), issues access JWT (1h) + opaque refresh token (7d, sha256
+    stored), updates `last_login`, records attempt success/fail.
+  - `POST /auth/refresh` — single-use rotation: validates by sha256 lookup,
+    checks expiry + revocation, revokes old + issues new pair.
+  - `POST /auth/logout` — revokes the supplied refresh token.
+  - `GET /auth/me` — hydrates full user from DB. Rejects deactivated accounts.
+- `UserController` real implementation:
+  - List / show / create / update name+role / reset password / activate /
+    deactivate. All admin-only.
+  - Password reset and deactivate revoke all active refresh tokens for the
+    target user (kicks other sessions).
+  - Guards: cannot deactivate yourself; cannot demote/deactivate the **last
+    active admin**; username `^[A-Za-z0-9_.-]{3,50}$`; password ≥ 8 chars.
+- Seed admin's `password_hash` is now a real bcrypt for `ChangeMe123!`.
+
+**Frontend (React, all `.jsx`)**
+- `shared/services/api.js`: axios with refresh-on-401 single-flight queue and
+  forced-logout subscriber pattern.
+- `shared/auth/AuthContext.jsx`: provider with `user`, `status`, `login`,
+  `logout`, `hasRole`, `canAccessApp`, `can(permission)`. Hydrates from
+  `/auth/me` on mount, listens for forced logout from the axios layer.
+- `shared/auth/RouteGuard.jsx`: shows loading → login → access-denied →
+  children. `LoginPage`, `AccessDenied`, `LoadingScreen` all in `.jsx`.
+- `shared/AppProviders.jsx` wraps the tree with `AuthProvider` + Sonner
+  `Toaster`. Mounted from `routes/__root.tsx`'s `RootComponent` (still no
+  logic in the `.tsx` shell — pure composition only).
+- Each `apps/<app>/<App>.jsx` wraps its body in
+  `<RouteGuard appKey="pos|inventory|dashboard|admin">` — role enforcement
+  centralized per app.
+- **Admin Panel UI** (`apps/admin/`):
+  - `AdminApp.jsx` — header, current user, sign out, Users / Connection tabs.
+  - `UsersPanel.jsx` — table with role badges, last-login, Edit / Reset
+    password / Activate-Deactivate. Self-row Deactivate disabled.
+  - `UserFormDialog.jsx` — create + edit dialog with server-side validation
+    surfaced inline.
+  - `PasswordResetDialog.jsx` — admin-set new password (min 8).
+  - `ConnectionPanel.jsx` — edit + persist API base URL, ping test, latency.
 
 ### ⏳ Upcoming
 
-- **Phase 2 — Admin Panel:** real auth flow, user CRUD, product/category CRUD, settings UI.
 - **Phase 3 — POS App:** product grid, cart, cash payment, receipt modal, stock deduction.
 - **Phase 4 — Inventory App:** mobile-first stock updates, low-stock alerts, product editing.
 - **Phase 5 — Dashboard App:** charts (Recharts), top products, peak hours heatmap.
@@ -208,10 +235,10 @@ Roles are validated **server-side** on every protected endpoint.
 - **CORS** currently `*` for dev — lock down to known origins in Phase 6.
 - **Admin panel** is browser-only; never bundled into Electron/Expo apps.
 
-## Coming Next — Phase 2 (Admin Panel)
+## Coming Next — Phase 3 (POS App)
 
-- Replace stub auth controller with real bcrypt + JWT issuance + rate-limit check.
-- Build full Admin UI: login, user list/create/edit/activate, product & category CRUD, system settings editor.
-- Wire Axios refresh-on-401 interceptor.
-- Update `context.md`.
-- Commit message target: `[Phase 2] Admin Panel complete`.
+- Product grid by category, variant size selector, cart with line edits.
+- Cash payment modal: amount-tendered with change calculation.
+- Atomic `POST /transactions` (insert tx + items + stock deduct in one PDO transaction).
+- Receipt modal (printable). Cashier sees only their own transactions.
+- Commit message target: `[Phase 3] POS App complete`.
