@@ -36,7 +36,7 @@ Delivered: schema + seed data, PHP REST skeleton, JWT/Auth/RateLimiter cores,
 controller stubs with role guards wired, Axios layer with localStorage base URL,
 folder scaffold for all 4 apps, route shells, landing page.
 
-### ✅ Phase 2 — Admin Panel + Auth (current)
+### ✅ Phase 2 — Admin Panel + Auth
 
 **Backend (PHP)**
 - `AuthController` real implementation:
@@ -79,9 +79,37 @@ folder scaffold for all 4 apps, route shells, landing page.
   - `PasswordResetDialog.jsx` — admin-set new password (min 8).
   - `ConnectionPanel.jsx` — edit + persist API base URL, ping test, latency.
 
+### ✅ Phase 3 — POS App (current)
+
+**Backend (PHP)**
+- `CategoryController.index` — lists active categories (`?include_inactive=1` opt-in); `store/update/deactivate` real implementations with name uniqueness + 404 guards.
+- `ProductController.index` — products joined with their `categories`, variants nested in one extra query (sized correctly via `FIELD(size,...)`). Supports `?available_only=1` (POS) and `?category_id=`.
+- `ProductController.show` — single product with variants.
+- `TransactionController.store` — atomic checkout in a single PDO transaction:
+  `SELECT … FOR UPDATE` on every involved variant row, validates availability +
+  stock + sufficient payment, inserts header + items with snapshotted price,
+  deducts stock, returns the just-created transaction with items. Rolls back
+  cleanly on any validation or runtime error.
+- `TransactionController.index` / `show` — cashier-scoped: cashiers only see
+  their own sales (server-enforced via JWT role), other authed roles see all.
+
+**Frontend (React)**
+- `shared/services/categories.js` and updated `products.js` / `transactions.js`.
+- `apps/pos/ProductGrid.jsx` — search + category chips, product cards with
+  per-variant size buttons (price, stock, out-of-stock disabled).
+- `apps/pos/CartPanel.jsx` — line items with +/− qty, remove, clear, totals,
+  Charge button. Stock-aware: blocks qty above available stock.
+- `apps/pos/PaymentDialog.jsx` — cash payment with quick-cash chips (rounded
+  bill suggestions), live change calculation, Enter-to-confirm.
+- `apps/pos/ReceiptModal.jsx` — printable receipt (print-only stylesheet
+  isolates `#ksu-receipt` from page chrome).
+- `apps/pos/RecentTransactions.jsx` — last 20 sales (cashier-scoped server-side),
+  click to reopen receipt.
+- `apps/pos/PosApp.jsx` — wires it all: catalog load, cart state, checkout,
+  receipt, recent-sales refresh. Stock numbers refresh after each sale.
+
 ### ⏳ Upcoming
 
-- **Phase 3 — POS App:** product grid, cart, cash payment, receipt modal, stock deduction.
 - **Phase 4 — Inventory App:** mobile-first stock updates, low-stock alerts, product editing.
 - **Phase 5 — Dashboard App:** charts (Recharts), top products, peak hours heatmap.
 - **Phase 6 — Polish & hardening:** Settings page wired everywhere, security audit, responsive polish.
