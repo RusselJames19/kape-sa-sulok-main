@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "../../shared/auth/AuthContext";
+import { useAuth } from "../../shared/auth/AuthContext.jsx";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ConnectionPanel from "./ConnectionPanel.jsx";

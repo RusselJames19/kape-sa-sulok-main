@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { usersService } from "../../shared/services/users";
-import { useAuth } from "../../shared/auth/AuthContext";
+import { useAuth } from "../../shared/auth/AuthContext.jsx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

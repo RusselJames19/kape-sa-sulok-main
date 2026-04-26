@@ -2,7 +2,7 @@
 // Each wrapper is just <RouteGuard appKey="..."><App/></RouteGuard>.
 // Keeping logic out of the .tsx route files per project rule.
 
-import RouteGuard from "../../shared/auth/RouteGuard";
+import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import PosApp from "./pos/PosApp.jsx";
 import InventoryApp from "./inventory/InventoryApp.jsx";
 import DashboardApp from "./dashboard/DashboardApp.jsx";
