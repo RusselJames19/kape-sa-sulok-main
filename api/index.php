@@ -4,17 +4,31 @@
 
 declare(strict_types=1);
 
-// CORS preflight
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+// ---------------- CORS ----------------
+$cors = require __DIR__ . '/config/cors.php';
+$origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowed = $cors['allowed_origins'] ?? [];
+$maxAge  = (int)($cors['max_age'] ?? 600);
+
+if (in_array('*', $allowed, true)) {
     header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With');
+} elseif ($origin !== '' && in_array($origin, $allowed, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+}
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With');
+header('Access-Control-Max-Age: ' . $maxAge);
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: no-referrer');
+header('X-Frame-Options: DENY');
 
 // Autoload (simple, no Composer required)
 spl_autoload_register(function (string $class): void {
@@ -39,6 +53,7 @@ try {
     );
 } catch (Throwable $e) {
     http_response_code(500);
+    // Don't leak internals — only the message in dev. In production swap for a generic line.
     echo json_encode([
         'error'   => 'server_error',
         'message' => $e->getMessage(),
