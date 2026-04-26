@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import { useAuth } from "../../shared/auth/AuthContext.jsx";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ConnectionPanel from "./ConnectionPanel.jsx";
 import UsersPanel from "./UsersPanel.jsx";
 
-export default function AdminApp() {
+function AdminBody() {
   const { user, logout } = useAuth();
   const [tab, setTab] = useState("users");
 
