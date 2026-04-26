@@ -33,7 +33,7 @@ export default function Landing() {
       <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
         <header className="text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-[oklch(0.50_0.08_55)]">
-            Phase 1 · Foundation
+            Business Management System
           </p>
           <h1 className="mt-4 font-serif text-5xl sm:text-6xl font-bold tracking-tight text-[oklch(0.25_0.05_50)]">
             Kape sa Sulok
