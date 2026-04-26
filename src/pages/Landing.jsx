@@ -66,7 +66,7 @@ export default function Landing() {
         </section>
 
         <footer className="mt-16 text-center text-xs text-[oklch(0.55_0.04_55)]">
-          Backend: PHP + MySQL via XAMPP · Configure API URL in Settings (Phase 6)
+          Backend: PHP + MySQL via XAMPP · Configure API URL & branding in the Admin Panel
         </footer>
       </main>
     </div>
