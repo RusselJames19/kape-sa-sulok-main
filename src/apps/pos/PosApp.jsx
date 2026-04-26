@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 import RouteGuard from "../../shared/auth/RouteGuard.jsx";
 import { useAuth } from "../../shared/auth/AuthContext.jsx";
+import { useSettings } from "../../shared/auth/SettingsContext.jsx";
 import { productsService } from "../../shared/services/products";
 import { categoriesService } from "../../shared/services/categories";
 import { transactionsService } from "../../shared/services/transactions";
