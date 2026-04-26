@@ -66,9 +66,106 @@ class ProductController
         return ['ok' => true, 'product' => $product];
     }
 
-    public function store(Request $req): array        { return ['ok' => true, 'todo' => 'Phase 4: create product']; }
-    public function update(Request $req): array       { return ['ok' => true, 'todo' => 'Phase 4: update product']; }
-    public function setAvailability(Request $req): array { return ['ok' => true, 'todo' => 'Phase 4: toggle is_available']; }
+    /**
+     * POST /products
+     * Body: { name, category_id, description?, image_url?, is_available? }
+     */
+    public function store(Request $req): array
+    {
+        $b = $req->body();
+        $name = trim((string)($b['name'] ?? ''));
+        $cid  = (int)($b['category_id'] ?? 0);
+        $desc = isset($b['description']) ? trim((string)$b['description']) : null;
+        $img  = isset($b['image_url'])   ? trim((string)$b['image_url'])   : null;
+        $avail = array_key_exists('is_available', $b) ? (int)(bool)$b['is_available'] : 1;
+
+        if ($name === '') Response::error('invalid_input', 'name is required', 422);
+        if ($cid <= 0)    Response::error('invalid_input', 'category_id is required', 422);
+
+        $pdo = Database::pdo();
+        $check = $pdo->prepare('SELECT 1 FROM categories WHERE id = ? LIMIT 1');
+        $check->execute([$cid]);
+        if (!$check->fetchColumn()) Response::error('invalid_input', 'Category not found', 422);
+
+        $ins = $pdo->prepare(
+            'INSERT INTO products (name, description, category_id, image_url, is_available)
+             VALUES (?, ?, ?, ?, ?)'
+        );
+        $ins->execute([$name, $desc, $cid, $img, $avail]);
+        $id = (int)$pdo->lastInsertId();
+
+        return $this->show(self::syntheticRequest(['id' => (string)$id]));
+    }
+
+    /**
+     * PUT /products/{id}
+     * Body: { name?, category_id?, description?, image_url? }
+     */
+    public function update(Request $req): array
+    {
+        $id = (int)($req->params['id'] ?? 0);
+        $exists = Database::pdo()->prepare('SELECT 1 FROM products WHERE id = ?');
+        $exists->execute([$id]);
+        if (!$exists->fetchColumn()) Response::notFound('Product not found');
+
+        $b = $req->body();
+        $sets = []; $vals = [];
+
+        if (array_key_exists('name', $b)) {
+            $name = trim((string)$b['name']);
+            if ($name === '') Response::error('invalid_input', 'name cannot be empty', 422);
+            $sets[] = 'name = ?'; $vals[] = $name;
+        }
+        if (array_key_exists('category_id', $b)) {
+            $cid = (int)$b['category_id'];
+            $check = Database::pdo()->prepare('SELECT 1 FROM categories WHERE id = ? LIMIT 1');
+            $check->execute([$cid]);
+            if (!$check->fetchColumn()) Response::error('invalid_input', 'Category not found', 422);
+            $sets[] = 'category_id = ?'; $vals[] = $cid;
+        }
+        if (array_key_exists('description', $b)) {
+            $sets[] = 'description = ?';
+            $vals[] = $b['description'] === null ? null : trim((string)$b['description']);
+        }
+        if (array_key_exists('image_url', $b)) {
+            $sets[] = 'image_url = ?';
+            $vals[] = $b['image_url'] === null ? null : trim((string)$b['image_url']);
+        }
+
+        if ($sets) {
+            $vals[] = $id;
+            $sql = 'UPDATE products SET ' . implode(', ', $sets) . ' WHERE id = ?';
+            Database::pdo()->prepare($sql)->execute($vals);
+        }
+        return $this->show(self::syntheticRequest(['id' => (string)$id]));
+    }
+
+    /**
+     * POST /products/{id}/availability
+     * Body: { available: bool }
+     */
+    public function setAvailability(Request $req): array
+    {
+        $id = (int)($req->params['id'] ?? 0);
+        $b = $req->body();
+        if (!array_key_exists('available', $b)) {
+            Response::error('invalid_input', 'available is required', 422);
+        }
+        $exists = Database::pdo()->prepare('SELECT 1 FROM products WHERE id = ?');
+        $exists->execute([$id]);
+        if (!$exists->fetchColumn()) Response::notFound('Product not found');
+
+        $val = (int)(bool)$b['available'];
+        Database::pdo()->prepare('UPDATE products SET is_available = ? WHERE id = ?')->execute([$val, $id]);
+        return $this->show(self::syntheticRequest(['id' => (string)$id]));
+    }
+
+    private static function syntheticRequest(array $params): Request
+    {
+        $r = new Request();
+        $r->params = $params;
+        return $r;
+    }
 
     /** @param int[] $productIds  @return array<int, array<int,array>> */
     private function fetchVariantsForProducts(array $productIds): array
