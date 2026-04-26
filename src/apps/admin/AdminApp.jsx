@@ -15,7 +15,7 @@ function AdminBody() {
   return (
     <div className="min-h-screen bg-[oklch(0.97_0.015_75)] text-foreground">
       <header className="border-b bg-card">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
               Kape sa Sulok
