@@ -1,0 +1,4 @@
+# Block all direct HTTP access to backup files.
+# Downloads must go through the BackupController endpoint (admin auth required).
+Require all denied
+Deny from all

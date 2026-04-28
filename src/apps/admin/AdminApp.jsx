@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import ConnectionPanel from "./ConnectionPanel.jsx";
 import UsersPanel from "./UsersPanel.jsx";
 import SettingsPanel from "./SettingsPanel.jsx";
+import BackupsPanel from "./BackupsPanel.jsx";
 
 function AdminBody() {
   const { user, logout } = useAuth();
@@ -46,6 +47,7 @@ function AdminBody() {
           {[
             { key: "users", label: "Users" },
             { key: "settings", label: "Settings" },
+            { key: "backups", label: "Backups" },
             { key: "connection", label: "Connection" },
           ].map((t) => (
             <button
@@ -66,6 +68,7 @@ function AdminBody() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8">
         {tab === "users" && <UsersPanel />}
         {tab === "settings" && <SettingsPanel />}
+        {tab === "backups" && <BackupsPanel />}
         {tab === "connection" && <ConnectionPanel />}
       </main>
     </div>
