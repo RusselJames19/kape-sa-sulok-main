@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function LoginPage() {
+export default function LoginPage({ appLabel, appSubtitle }) {
   const { login, error: ctxError } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +35,19 @@ export default function LoginPage() {
             Kape sa Sulok
           </p>
           <CardTitle className="text-2xl">Sign in</CardTitle>
-          <CardDescription>Enter your credentials to continue</CardDescription>
+          {appLabel && (
+            <div className="pt-2">
+              <p className="text-base font-semibold text-[oklch(0.42_0.09_55)]">
+                {appLabel}
+              </p>
+              {appSubtitle && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {appSubtitle}
+                </p>
+              )}
+            </div>
+          )}
+          <CardDescription className="pt-1">Enter your credentials to continue</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">

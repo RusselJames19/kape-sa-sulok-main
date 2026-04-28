@@ -364,3 +364,48 @@ Roles are validated **server-side** on every protected endpoint.
 - Atomic `POST /transactions` (insert tx + items + stock deduct in one PDO transaction).
 - Receipt modal (printable). Cashier sees only their own transactions.
 - Commit message target: `[Phase 3] POS App complete`.
+
+## Phase 7 — Backup, Analytics Export, Login Polish
+
+### 1. Automatic Database Backup
+Admin-only backup management lives in the Admin Panel under the **Backups** tab.
+Snapshots are produced via `mysqldump` invoked through `proc_open`, with DB
+credentials passed as environment variables (never on the command line) and
+output written to `api/backups/ksu_backup_YYYY-MM-DD_HHMMSS.sql`. The
+`api/backups/` directory is shielded by `.htaccess` (`Require all denied`) so
+files are never reachable over HTTP — downloads stream through the API only.
+
+New endpoints (all `admin`-guarded):
+- `POST   /backup/generate`           — create a new snapshot
+- `GET    /backup/list`               — list snapshots (filename, size, ctime)
+- `GET    /backup/download/{file}`    — stream a snapshot as `application/sql`
+- `DELETE /backup/{file}`             — delete a snapshot
+
+Filename validation enforces the `ksu_backup_*.sql` prefix and `realpath` is
+checked against the backups directory to prevent path traversal.
+
+### 2. Export Analytics Data
+The Dashboard header now exposes an **Export CSV** dropdown (next to Refresh)
+with three options that respect the currently selected date range:
+- **Sales (time series)** → `ksu_sales_<from>_to_<to>.csv`
+- **Top products**        → `ksu_top_products_<from>_to_<to>.csv`
+- **Peak hours**          → `ksu_peak_hours_<from>_to_<to>.csv`
+
+CSV generation is fully client-side (`src/shared/utils/csvExport.js`):
+proper RFC-style escaping for quotes/commas/newlines, UTF-8 BOM for Excel
+compatibility, and Blob + `<a download>` to trigger the file save. No new
+backend endpoints — the existing Phase 5 analytics APIs are reused.
+
+### 3. Login Page App Labels
+`LoginPage` now accepts `appLabel` and `appSubtitle` props (passed through by
+`RouteGuard`) so each app's login screen identifies itself without redesign:
+- POS:       "Point of Sale" / "Cashier & Manager Access"
+- Inventory: "Inventory Management" / "Manager Access"
+- Dashboard: "Business Dashboard" / "Owner & Manager Access"
+- Admin:     "Admin Panel" / "Authorized Personnel Only"
+
+The label uses a warm coffee tone (`oklch(0.42 0.09 55)`) sized between the
+brand wordmark and the form fields. Page titles were also normalised to the
+`Kape sa Sulok — <App>` format across all four route files.
+
+Commit message: `[Phase 7] Backup, analytics export, login polish`

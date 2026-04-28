@@ -4,7 +4,7 @@ import DashboardApp from "../apps/dashboard/DashboardApp.jsx";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Kape sa Sulok" },
+      { title: "Kape sa Sulok — Dashboard" },
       { name: "description", content: "Sales analytics and business insights for Kape sa Sulok." },
     ],
   }),

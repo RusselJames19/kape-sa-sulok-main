@@ -172,5 +172,5 @@ function InventoryBody() {
 }
 
 export default function InventoryApp() {
-  return <RouteGuard appKey="inventory"><InventoryBody /></RouteGuard>;
+  return <RouteGuard appKey="inventory" appLabel="Inventory Management" appSubtitle="Manager Access"><InventoryBody /></RouteGuard>;
 }
