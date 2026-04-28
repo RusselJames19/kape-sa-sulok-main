@@ -167,5 +167,5 @@ function DashboardBody() {
 }
 
 export default function DashboardApp() {
-  return <RouteGuard appKey="dashboard"><DashboardBody /></RouteGuard>;
+  return <RouteGuard appKey="dashboard" appLabel="Business Dashboard" appSubtitle="Owner & Manager Access"><DashboardBody /></RouteGuard>;
 }

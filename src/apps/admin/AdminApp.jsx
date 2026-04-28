@@ -76,5 +76,5 @@ function AdminBody() {
 }
 
 export default function AdminApp() {
-  return <RouteGuard appKey="admin"><AdminBody /></RouteGuard>;
+  return <RouteGuard appKey="admin" appLabel="Admin Panel" appSubtitle="Authorized Personnel Only"><AdminBody /></RouteGuard>;
 }

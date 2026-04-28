@@ -235,5 +235,5 @@ function PosBody() {
 }
 
 export default function PosApp() {
-  return <RouteGuard appKey="pos"><PosBody /></RouteGuard>;
+  return <RouteGuard appKey="pos" appLabel="Point of Sale" appSubtitle="Cashier & Manager Access"><PosBody /></RouteGuard>;
 }
