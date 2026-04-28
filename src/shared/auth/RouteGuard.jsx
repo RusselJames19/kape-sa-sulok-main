@@ -7,11 +7,11 @@ import LoginPage from "./LoginPage";
 import AccessDenied from "./AccessDenied";
 import LoadingScreen from "./LoadingScreen";
 
-export default function RouteGuard({ appKey, children }) {
+export default function RouteGuard({ appKey, appLabel, appSubtitle, children }) {
   const { status, isAuthenticated, canAccessApp } = useAuth();
 
   if (status === "loading") return <LoadingScreen />;
-  if (!isAuthenticated) return <LoginPage />;
+  if (!isAuthenticated) return <LoginPage appLabel={appLabel} appSubtitle={appSubtitle} />;
   if (appKey && !canAccessApp(appKey)) return <AccessDenied requiredApp={appKey} />;
 
   return children;
