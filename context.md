@@ -409,3 +409,43 @@ brand wordmark and the form fields. Page titles were also normalised to the
 `Kape sa Sulok — <App>` format across all four route files.
 
 Commit message: `[Phase 7] Backup, analytics export, login polish`
+
+## Phase 7b — Image Upload
+
+Product images are no longer entered as URLs. Admin and Inventory product
+forms now use a shared **ImageUploadField** component
+(`src/shared/components/ImageUploadField.jsx`) that uploads the picked file
+immediately and stores the returned URL in `image_url`.
+
+### New endpoint
+- `POST /upload/image` — Admin + Manager only.
+  - Accepts `multipart/form-data` with a single `image` file field.
+  - Validates extension (`jpg`, `jpeg`, `png`, `webp`), real MIME via
+    `finfo`, and size (max **2MB**).
+  - Saves to **`C:/xampp/htdocs/uploads/products/`** (created automatically
+    on first upload via `mkdir`). A hardening `.htaccess` is dropped on
+    first run so only image files can be served from that directory.
+  - Filename uses `uniqid()` + normalised extension (jpeg → jpg).
+  - Returns `{ url, filename, size }` where `url` is built from
+    `$_SERVER['HTTP_HOST']` (and HTTPS detection) so it works on any
+    machine/IP automatically.
+
+### Frontend service
+`src/shared/services/uploads.js` exposes `uploadsService.uploadImage(file)`
+using the shared Axios instance.
+
+### Field UX
+- Click-to-upload or drag-and-drop area with a thumbnail preview after
+  upload. Existing products show the current image with a **Change Image**
+  button.
+- Client-side validation (extension + 2MB) runs before any request.
+- Spinner during upload; PHP error messages are surfaced via toast.
+- A small **"Use URL instead"** toggle reveals a plain text input as a
+  fallback for external image URLs.
+
+### Required folder
+The XAMPP host must serve `C:/xampp/htdocs/uploads/products/` at
+`/uploads/products/`. PHP creates the folder and `.htaccess` automatically
+on the first successful upload.
+
+Commit message: `[Phase 7b] Image upload feature`
