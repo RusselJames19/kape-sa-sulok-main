@@ -13,6 +13,7 @@ import { productsService } from "../../shared/services/products";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import VariantEditorRow from "./VariantEditorRow.jsx";
+import ImageUploadField from "../../shared/components/ImageUploadField.jsx";
 
 const EMPTY_VARIANT = { size: "none", price: "", stock_quantity: 0, low_stock_threshold: 10 };
 
@@ -124,8 +125,8 @@ export default function ProductEditorDialog({ open, onOpenChange, product, categ
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="pimg">Image URL (optional)</Label>
-            <Input id="pimg" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+            <Label>Product Image (optional)</Label>
+            <ImageUploadField value={imageUrl} onChange={setImageUrl} />
           </div>
           <div className="flex items-center justify-between rounded-md border p-3">
             <div>

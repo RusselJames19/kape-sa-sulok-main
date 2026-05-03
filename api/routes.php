@@ -72,6 +72,10 @@ function registerRoutes(Router $r): Router
     $r->put('/settings', fn(Request $q) => (new SettingsController())->update($q),
         [Auth::requireRole('admin')]);
 
+    // ---- Uploads (admin + manager) ----
+    $upload = [Auth::requireRole('admin', 'manager')];
+    $r->post('/upload/image', fn(Request $q) => (new UploadController())->image($q), $upload);
+
     // ---- Backups (admin only) ----
     $r->post  ('/backup/generate',            fn(Request $q) => (new BackupController())->generate($q), $admin);
     $r->get   ('/backup/list',                fn(Request $q) => (new BackupController())->index($q),    $admin);
