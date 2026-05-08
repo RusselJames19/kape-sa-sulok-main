@@ -4,20 +4,21 @@ FROM php:8.2-apache
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 # Install mysqldump
-RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy API folder to Apache web root
 COPY api/ /var/www/html/
 
-# Enable Apache mod_rewrite for routing
+# Enable mod_rewrite
 RUN a2enmod rewrite
 
-# Apache config to allow .htaccess
-RUN echo '<Directory /var/www/html>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/api.conf \
-&& a2enconf api
+# Allow .htaccess overrides
+RUN sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/apache2.conf
 
-EXPOSE 80
+# Set ServerName to suppress warning
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Keep Apache running in foreground (prevents crash loop)
+CMD ["apache2-foreground"]
